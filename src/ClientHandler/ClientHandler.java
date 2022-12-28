@@ -6,13 +6,14 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.*;
 
-public class ClientHandler implements Runnable{
+public class ClientHandler implements Runnable {
     Thread t;
     Socket s;
     public String name = "";
     DataInputStream dInput;
     DataOutputStream dOutput;
     public static HashMap<Integer, ClientHandler> clientList = new HashMap<>();
+    int id;
 
     public ClientHandler(Socket sk, int id){
         try{
@@ -21,8 +22,8 @@ public class ClientHandler implements Runnable{
             dOutput = new DataOutputStream(new DataOutputStream(sk.getOutputStream()));
             this.name = dInput.readUTF();
             clientList.put(id, this);
+            this.id = id;
 
-//            System.out.println("Name: " + this.name);
         } catch (Exception e){
             System.out.println("Handler constructor exception: " + e);
         }
@@ -31,9 +32,6 @@ public class ClientHandler implements Runnable{
 
     @Override
     public void run(){
-//        String msg;
-
-
         while (true){
             try{
                 new Thread(() -> {
