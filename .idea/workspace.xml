@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5d470bb7-328b-48fd-80de-11b829e86fac" name="Changes" comment="Done choosing file&#10;No sub-direc watch ver">
+    <list default="true" id="5d470bb7-328b-48fd-80de-11b829e86fac" name="Changes" comment="Done server UI&#10;add thread for watch service in client&#10;fix some client -&gt; server bug">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Client/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/Client.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ClientHandler/ClientHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ClientHandler/ClientHandler.java" afterDir="false" />
@@ -45,7 +45,7 @@
       <recent name="Client" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Server">
+  <component name="RunManager" selected="Application.Client">
     <configuration name="Client" type="Application" factoryName="Application" singleton="false">
       <option name="MAIN_CLASS_NAME" value="Client.Client" />
       <module name="untitled" />
@@ -102,7 +102,14 @@
       <option name="project" value="LOCAL" />
       <updated>1672398242819</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Done server UI&#10;add thread for watch service in client&#10;fix some client -&gt; server bug">
+      <created>1672423474482</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1672423474482</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -121,7 +128,8 @@
     <MESSAGE value="Connect Client &lt;-&gt; Server&#10;Client send dir change to Server (haven't check sub-dir yet)" />
     <MESSAGE value="Client UI with table showing action" />
     <MESSAGE value="Done choosing file&#10;No sub-direc watch ver" />
-    <option name="LAST_COMMIT_MESSAGE" value="Done choosing file&#10;No sub-direc watch ver" />
+    <MESSAGE value="Done server UI&#10;add thread for watch service in client&#10;fix some client -&gt; server bug" />
+    <option name="LAST_COMMIT_MESSAGE" value="Done server UI&#10;add thread for watch service in client&#10;fix some client -&gt; server bug" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/untitled$Client.ic" NAME="Client Coverage Results" MODIFIED="1672408434631" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />

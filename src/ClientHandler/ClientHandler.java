@@ -48,10 +48,14 @@ public class ClientHandler extends JPanel implements Runnable {
                             DefaultTableModel model = (DefaultTableModel) Server.jTable.getModel();
                             msg = dInput.readUTF();
 
-                            String []splitMSG = msg.split("<");
-                            if(splitMSG.length != 1){
+                            if(msg.equals("Change observe")){
+                                model.addRow(new Object[]{this.id, this.name, "CHANGE DIRECTORY", Server.chooserDir});
+                            }
+                            else{
+                                String []splitMSG = msg.split("<");
                                 model.addRow(new Object[]{this.id, this.name, splitMSG[0], splitMSG[1]});
                             }
+
                             System.out.println("Received from " + this.name + ": " + msg);
 
                         }
@@ -84,27 +88,29 @@ public class ClientHandler extends JPanel implements Runnable {
         while (s.isConnected()){
             Scanner sc = new Scanner(System.in);
 //                    if(countTime == 0){
-            if(Server.changeFilePath == false){
+            if(!Server.changeFilePath || this.id != Server.currentSelectedUser){
                 continue;
             }
-            try {
-                System.out.println("currentuser: " + Server.currentSelectedUser + " - name: " + this.name);
-
-                ClientHandler temp = clientList.get(Server.currentSelectedUser);
-
-                String sendMSG = Server.chooserDir;
+            else {
                 try {
-                    temp.dOutput.writeUTF(sendMSG);
+                    System.out.println("currentuser: " + Server.currentSelectedUser + " - name: " + this.name);
+
+                    ClientHandler temp = clientList.get(Server.currentSelectedUser);
+
+                    String sendMSG = Server.chooserDir;
+//                Thread.interrupted();
+                    try {
+                        temp.dOutput.writeUTF(sendMSG);
+                    } catch (Exception e) {
+                        System.out.println("Exception: " + e);
+                    }
+                    System.out.println("Sent msg: " + this.id + "-" + sendMSG);
+//                    prevID = Server.currentSelectedUser;
+//                    countTime = 1;
+                    Server.changeFilePath = false;
                 } catch (Exception e) {
-                    System.out.println("Exception: " + e);
+                    System.out.println("Exception 2: " + e);
                 }
-                System.out.println("Sent msg: " + this.id + "-" + sendMSG);
-                prevID = Server.currentSelectedUser;
-                countTime = 1;
-                Server.changeFilePath = false;
-            }
-            catch (Exception e){
-                System.out.println("Exception 2: " + e);
             }
 //                    }
         }

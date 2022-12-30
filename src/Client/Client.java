@@ -1,6 +1,8 @@
 package Client;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -11,6 +13,7 @@ import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class Client extends JPanel {
@@ -24,42 +27,32 @@ public class Client extends JPanel {
     public static String sendMessage = null;
     public static JFrame window;
     public static int port;
-    public static JTextField jtextport;
-    public static JTextField jtextip;
     public static JTable jTable;
     public static String sendingMSG = null;
     public static boolean sendAvailable = false;
     public static boolean dirChange = false;
 
-    Client(Socket s, String name, String dir) {
+    Client(Socket s, String name) {
         try {
             this.s = s;
             dInput = new DataInputStream(new DataInputStream(s.getInputStream()));
             dOutput = new DataOutputStream(new DataOutputStream(s.getOutputStream()));
             this.name = name;
 
-            this.dir = dir;
-            watcher = FileSystems.getDefault().newWatchService();
-            direc = Paths.get(this.dir);
-            direc.register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE,
-                    StandardWatchEventKinds.ENTRY_MODIFY);
-            key = null;
+            this.dir = "D:\\test";
+//            watcher = FileSystems.getDefault().newWatchService();
+//            direc = Paths.get(this.dir);
+//            direc.register(watcher, StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_DELETE,
+//                    StandardWatchEventKinds.ENTRY_MODIFY);
+//            key = null;
 
-            window = new JFrame("Client");
+            window = new JFrame("Client - name: " + this.name);
             window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             window.setLayout(null);
             window.setBounds(300, 200, 1000, 600);
-//           window.setResizable(false);
 
+            window.getContentPane().setBackground(new Color(240, 240, 240));
 
-            JLabel labelport = new JLabel("Port");
-            labelport.setBounds(20, 120, 80, 30);
-            labelport.setFont(new Font("Serif", Font.PLAIN, 24));
-            window.add(labelport);
-            jtextport = new JTextField("D:\\test");
-            jtextport.setSize(new Dimension(100, 50));
-            jtextport.setBounds(80, 120, 200, 30);
-            window.add(jtextport);
             jTable = new JTable(new DefaultTableModel(new Object[]{"Action", "File Path"}, 0));
 
 //           jTable = new JTable(data,ColumnName);
@@ -82,8 +75,6 @@ public class Client extends JPanel {
 
 //            Scanner sc = new Scanner(System.in);
 //            while (this.s.isConnected()) {
-
-
 
 
 //                Path recurDir = Paths.get(dir);
@@ -157,15 +148,6 @@ public class Client extends JPanel {
         }
 
         Scanner sc = new Scanner(System.in);
-//        while (s.isConnected()){
-////            if(RecursiveWatchServiceExample.watcher != null){
-//                Path recurDir = Paths.get(dir);
-//
-////                RecursiveWatchServiceExample.watcher.close();
-//                new Thread(new RecursiveWatchServiceExample(recurDir, s)).start();
-//                Thread.sleep(1000);
-////            }
-//        }
     }
 
     public void listenMessage() {
@@ -175,30 +157,34 @@ public class Client extends JPanel {
                 try {
                     msg = dInput.readUTF();
                     if (isValidPath(msg)) {
-//                        Thread.sleep(200);
-                        File file = new File(dir + "\\pj_temp_new_file_java_01.txt");
-                        if (file.createNewFile())
-                            System.out.println("JV created");
-                        if (file.delete())
-                            System.out.println("JV DELETED");
+//                        File file = new File(dir + "\\pj_temp_new_file_java_01.txt");
+//                        if (file.createNewFile())
+//                            System.out.println("JV created");
+//                        if (file.delete())
+//                            System.out.println("JV DELETED");
 
                         dir = msg;
                         DefaultTableModel model = (DefaultTableModel) jTable.getModel();
                         dirChange = true;
-                        model.addRow(new Object[]{"Change Folder", dir});
+                        model.addRow(new Object[]{"CHANGE DIRECTORY", dir});
                         dOutput.writeUTF("Change observe");
 
                         Path recurDir = Paths.get(dir);
-//
-    ////                RecursiveWatchServiceExample.watcher.close();
+                        if(RecursiveWatchServiceExample.watcher != null){
+                            Thread.interrupted();
+                            RecursiveWatchServiceExample.watcher.close();
+                        }
                         new Thread(new RecursiveWatchServiceExample(recurDir, s)).start();
                     }
 
                     System.out.println("Received: " + msg);
                 } catch (Exception e) {
-                    JOptionPane.showMessageDialog(window, "Server closed, this program will be terminated");
+                    if (Objects.equals(e.toString(), "java.net.SocketException: Connection reset")) {
+                        JOptionPane.showMessageDialog(window, "Server closed, this program will be terminated");
+                        System.exit(0);
+                    }
+
                     System.out.println("Ex1: " + e);
-                    System.exit(0);
                 }
             }
         }).start();
@@ -214,15 +200,13 @@ public class Client extends JPanel {
                 Thread.sleep(200);
             } catch (InterruptedException e) {
                 System.out.println("Ex2: " + e);
-
             }
         }
 
         try {
-
             Socket s = new Socket("localhost", 2222);
+            Client cl = new Client(s, GUI.sName);
 
-            Client cl = new Client(s, GUI.sName, GUI.sDir);
             cl.listenMessage();
             cl.sendMessage();
         } catch (Exception ex) {
@@ -245,17 +229,11 @@ public class Client extends JPanel {
 }
 
 class GUI extends JPanel {
-    public static String sName = null, sDir = null;
+    public static String sName = null;
     public static JFrame window;
     public static int port;
-    public static JTextField jtextport;
-    public static JTextField jtextip;
     public static JTextField jtextname;
     public static JButton jbutton;
-
-    public static JFrame window2;
-    public static JTable jTable;
-    public static Client cll;
 
     public GUI() {
         window = new JFrame("Client");
@@ -268,20 +246,11 @@ class GUI extends JPanel {
         label.setFont(new Font("Serif", Font.PLAIN, 30));
         window.add(label);
 
-        JLabel labelport = new JLabel("Port");
-        labelport.setBounds(20, 120, 80, 30);
-        labelport.setFont(new Font("Serif", Font.PLAIN, 24));
-        window.add(labelport);
-        jtextport = new JTextField("D:\\test");
-        jtextport.setSize(new Dimension(100, 50));
-        jtextport.setBounds(80, 120, 200, 30);
-        window.add(jtextport);
-
         JLabel labelname = new JLabel("Name");
         labelname.setBounds(20, 160, 80, 30);
         labelname.setFont(new Font("Serif", Font.PLAIN, 24));
         window.add(labelname);
-        jtextname = new JTextField("tgt");
+        jtextname = new JTextField("User 1");
         jtextname.setSize(new Dimension(100, 50));
         jtextname.setBounds(80, 160, 200, 30);
         window.add(jtextname);
@@ -292,35 +261,47 @@ class GUI extends JPanel {
 
         window.setVisible(true);
 
-        jbutton.addActionListener(new ActionListener() {
+        jtextname.getDocument().addDocumentListener(new DocumentListener() {
             @Override
-            public void actionPerformed(ActionEvent e) {
-                sName = jtextname.getText();
-                sDir = jtextport.getText();
-                window.dispose();
+            public void insertUpdate(DocumentEvent e) {
+                changed();
             }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                changed();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                changed();
+            }
+
+            public void changed() {
+                jbutton.setEnabled(!jtextname.getText().equals("") && jtextname.getText() != null);
+            }
+        });
+
+        jbutton.addActionListener(e -> {
+            sName = jtextname.getText();
+            window.dispose();
         });
 //        jbutton.setActionCommand("nameSend");
     }
 }
 
-class RecursiveWatchServiceExample implements Runnable{
+class RecursiveWatchServiceExample implements Runnable {
 
     public static WatchService watcher;
     private final Map<WatchKey, Path> keys;
     Socket s;
     Path direcPath;
 
-//    public static void main(String[] args) throws IOException {
-//        Path dir = Paths.get("C:/uploads");
-//        new RecursiveWatchServiceExample(dir).processEvents();
-//    }
-
     /**
      * Creates a WatchService and registers the given directory
      */
     RecursiveWatchServiceExample(Path dir, Socket s) throws IOException {
-        this.watcher = FileSystems.getDefault().newWatchService();
+        watcher = FileSystems.getDefault().newWatchService();
         this.keys = new HashMap<WatchKey, Path>();
         this.s = s;
         this.direcPath = dir;
@@ -357,7 +338,7 @@ class RecursiveWatchServiceExample implements Runnable{
      */
     @Override
     public void run() {
-        for (;;) {
+        for (; ; ) {
 
             // wait for key to be signalled
             WatchKey key;
@@ -370,6 +351,11 @@ class RecursiveWatchServiceExample implements Runnable{
             Path dir = keys.get(key);
             if (dir == null) {
                 System.err.println("WatchKey not recognized!!");
+//                try {
+//                    walkAndRegisterDirectories(direcPath);
+//                } catch (IOException e) {
+//                    throw new RuntimeException(e);
+//                }
                 continue;
             }
 
@@ -386,6 +372,8 @@ class RecursiveWatchServiceExample implements Runnable{
 //                System.out.format("%s: %s\n", event.kind().name(), child);
                 Client.sendingMSG = event.kind().name() + "<" + child;
 
+//                if (child.getFileName().toString().equals("pj_temp_new_file_java_01"))
+//                    continue;
                 try {
                     DataOutputStream dOut = new DataOutputStream(new DataOutputStream(this.s.getOutputStream()));
                     dOut.writeUTF(Client.sendingMSG);
@@ -401,9 +389,9 @@ class RecursiveWatchServiceExample implements Runnable{
                 // sub-directories
                 if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
                     try {
-//                        if (Files.isDirectory(child)) {
-                            walkAndRegisterDirectories(direcPath);
-//                        }
+                        if (Files.isDirectory(child)) {
+                            walkAndRegisterDirectories(child);
+                        }
                     } catch (IOException x) {
                         // do something useful
                     }

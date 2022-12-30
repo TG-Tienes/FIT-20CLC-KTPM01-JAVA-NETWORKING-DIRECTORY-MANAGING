@@ -23,14 +23,14 @@ public class Server {
     public static int currentSelectedUser = -1;
     public static JFileChooser fileChooser;
     public static String chooserDir;
-    public static boolean changeFilePath = false;
+    public static boolean changeFilePath = false, letWrite = false;
 
     Server(int port){
         try{
             sv = new ServerSocket(port);
             Server.port = port;
 
-            window = new JFrame("Client");
+            window = new JFrame("SERVER");
             window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             window.setLayout(null);
             window.setBounds(300, 200, 1000, 800);
