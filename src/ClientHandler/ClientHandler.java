@@ -1,16 +1,11 @@
 package ClientHandler;
 
-import Client.Client;
 import Server.Server;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.Socket;
 import java.util.*;
 
@@ -35,7 +30,7 @@ public class ClientHandler extends JPanel implements Runnable {
             this.id = id;
 
             DefaultTableModel model = (DefaultTableModel) Server.clientTable.getModel();
-            model.addRow(new Object[]{this.id, this.name, this.dir});
+            model.addRow(new Object[]{this.id, this.name, "Not selected"});
 
         } catch (Exception e){
             System.out.println("Handler constructor exception: " + e);
@@ -54,8 +49,9 @@ public class ClientHandler extends JPanel implements Runnable {
                             msg = dInput.readUTF();
 
                             String []splitMSG = msg.split("<");
-                            if(splitMSG.length != 1)
+                            if(splitMSG.length != 1){
                                 model.addRow(new Object[]{this.id, this.name, splitMSG[0], splitMSG[1]});
+                            }
                             System.out.println("Received from " + this.name + ": " + msg);
 
                         }
