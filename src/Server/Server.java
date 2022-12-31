@@ -23,7 +23,7 @@ public class Server {
     public static int currentSelectedUser = -1;
     public static JFileChooser fileChooser;
     public static String chooserDir;
-    public static boolean changeFilePath = false, letWrite = false;
+    public static boolean changeFilePath = false, disconnectChoice = false;
 
     Server(int port){
         try{
@@ -51,7 +51,7 @@ public class Server {
             window.add(clientTableLabel);
 
             jTable = new JTable(new DefaultTableModel(new Object[]{"ID", "Name", "Action" ,"File Path"}, 0));
-            clientTable = new JTable(new DefaultTableModel(new Object[]{"ID", "Name","Current Path"}, 0));
+            clientTable = new JTable(new DefaultTableModel(new Object[]{"ID", "Name", "Time","Current Path"}, 0));
 
 
             clientTable.setCursor(new Cursor(Cursor.HAND_CURSOR));
@@ -84,7 +84,8 @@ public class Server {
             clientTable.getColumnModel().getColumn(0).setMinWidth(10);
             clientTable.getColumnModel().getColumn(0).setPreferredWidth(10);
             clientTable.getColumnModel().getColumn(1).setPreferredWidth(100);
-            clientTable.getColumnModel().getColumn(2).setPreferredWidth(400);
+            clientTable.getColumnModel().getColumn(2).setPreferredWidth(40);
+            clientTable.getColumnModel().getColumn(3).setPreferredWidth(360);
 
             for(int i = 0; i < 3; ++i){
                 jTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
@@ -140,6 +141,11 @@ public class Server {
                     Server.clientTable.clearSelection();
                     System.out.println(fileChooser.getSelectedFile());
                 }
+
+//                if(Server.clientTable.getSelectedRow() > -1){
+//                    Server.currentSelectedUser = (int) Server.clientTable.getValueAt(Server.clientTable.getSelectedRow(), 0);
+//                    Server.disconnectChoice = true;
+//                }
             });
 //            window.add(jbutton);
             window.setVisible(true);

@@ -8,6 +8,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.Socket;
 import java.util.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class ClientHandler extends JPanel implements Runnable {
     Thread t;
@@ -29,9 +31,12 @@ public class ClientHandler extends JPanel implements Runnable {
             clientList.put(id, this);
             this.id = id;
 
+            String time = java.time.LocalTime.now().toString();
+            String []tempTime = time.split(":");
             DefaultTableModel model = (DefaultTableModel) Server.clientTable.getModel();
-            model.addRow(new Object[]{this.id, this.name, "Not selected"});
 
+            time = tempTime[0] + ":" + tempTime[1];
+            model.addRow(new Object[]{this.id, this.name, time, "Not selected"});
         } catch (Exception e){
             System.out.println("Handler constructor exception: " + e);
         }
@@ -94,6 +99,10 @@ public class ClientHandler extends JPanel implements Runnable {
             else {
                 try {
                     System.out.println("currentuser: " + Server.currentSelectedUser + " - name: " + this.name);
+//                    if(Server.disconnectChoice){
+//                        Server.disconnectChoice = false;
+//                        this.s.close();
+//                    }
 
                     ClientHandler temp = clientList.get(Server.currentSelectedUser);
 
