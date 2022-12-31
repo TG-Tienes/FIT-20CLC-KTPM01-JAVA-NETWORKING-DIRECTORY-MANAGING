@@ -6,8 +6,7 @@
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="5d470bb7-328b-48fd-80de-11b829e86fac" name="Changes" comment="Final socket version (no bugs, only 1 small exception for client when changing file directory)&#10;No Client UI yet">
-      <change afterPath="$PROJECT_DIR$/.idea/artifacts/server_jar.xml" afterDir="false" />
+    <list default="true" id="5d470bb7-328b-48fd-80de-11b829e86fac" name="Changes" comment="Client UI&#10;Complete all project requirements">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Client/Client.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Client/Client.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/ClientHandler/ClientHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/ClientHandler/ClientHandler.java" afterDir="false" />
@@ -55,7 +54,7 @@
       <recent name="Client" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.Client">
+  <component name="RunManager" selected="Application.Server">
     <configuration name="Client" type="Application" factoryName="Application" singleton="false">
       <option name="MAIN_CLASS_NAME" value="Client.Client" />
       <module name="untitled" />
@@ -126,7 +125,14 @@
       <option name="project" value="LOCAL" />
       <updated>1672433437616</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="Client UI&#10;Complete all project requirements">
+      <created>1672488305209</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1672488305209</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -147,7 +153,8 @@
     <MESSAGE value="Done choosing file&#10;No sub-direc watch ver" />
     <MESSAGE value="Done server UI&#10;add thread for watch service in client&#10;fix some client -&gt; server bug" />
     <MESSAGE value="Final socket version (no bugs, only 1 small exception for client when changing file directory)&#10;No Client UI yet" />
-    <option name="LAST_COMMIT_MESSAGE" value="Final socket version (no bugs, only 1 small exception for client when changing file directory)&#10;No Client UI yet" />
+    <MESSAGE value="Client UI&#10;Complete all project requirements" />
+    <option name="LAST_COMMIT_MESSAGE" value="Client UI&#10;Complete all project requirements" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/untitled$Client.ic" NAME="Client Coverage Results" MODIFIED="1672408434631" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" />

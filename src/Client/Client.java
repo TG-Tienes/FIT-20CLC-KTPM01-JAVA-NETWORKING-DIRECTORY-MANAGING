@@ -179,14 +179,15 @@ class GUI extends JPanel {
         jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JLabel label = new JLabel("INPUT CLIENT NAME");
-        label.setBounds(40, 20, 1000, 30);
         label.setFont(new Font("SansSerif", Font.BOLD, 40));
+        label.setBounds(40, 20, 1000, 30);
         jFrame.add(label);
 
         JLabel labelName = new JLabel("Name");
         labelName.setBounds(20, 160, 80, 30);
         labelName.setFont(new Font("Serif", Font.PLAIN, 24));
         jFrame.add(labelName);
+
         jInputName = new JTextField("User 1");
         jInputName.setSize(new Dimension(100, 50));
         jInputName.setBounds(80, 160, 200, 30);
