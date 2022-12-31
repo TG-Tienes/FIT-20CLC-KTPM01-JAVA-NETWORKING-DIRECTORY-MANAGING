@@ -3,6 +3,8 @@ package Server;
 import ClientHandler.ClientHandler;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -30,11 +32,13 @@ public class Server {
     public static String chooserDir;
     public static boolean changeFilePath = false, disconnectChoice = false;
 
-    public static  JScrollPane dataScrollPane;
+    public static JScrollPane dataScrollPane;
     public static JComboBox jComboID;
+    public static JButton filterNameButton;
+    public static JTextField inputSearchNameTextField;
 
-    Server(int port){
-        try{
+    Server(int port) {
+        try {
             sv = new ServerSocket(port);
             Server.port = port;
 
@@ -44,7 +48,7 @@ public class Server {
             window.setLayout(null);
             window.setBounds(300, 200, 1000, 800);
 
-            window.getContentPane().setBackground(new Color(240,240,240));
+            window.getContentPane().setBackground(new Color(240, 240, 240));
 
             // Label
             JLabel uiLabel = new JLabel("SERVER");
@@ -62,12 +66,12 @@ public class Server {
 
             // create table
             DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-            centerRenderer.setHorizontalAlignment( JLabel.CENTER );
+            centerRenderer.setHorizontalAlignment(JLabel.CENTER);
 
-            DefaultTableModel jTableModel = new DefaultTableModel(new Object[]{"ID", "Name", "Time" ,"Action" ,"File Path"}, 0);
+            DefaultTableModel jTableModel = new DefaultTableModel(new Object[]{"ID", "Name", "Time", "Action", "File Path"}, 0);
             jTable = new JTable(jTableModel);
 
-            DefaultTableModel clientTableModel = new DefaultTableModel(new Object[]{"ID", "Name", "Time","Current Path"}, 0);
+            DefaultTableModel clientTableModel = new DefaultTableModel(new Object[]{"ID", "Name", "Time", "Current Path"}, 0);
 
             clientTable = new JTable(clientTableModel);
 
@@ -79,16 +83,16 @@ public class Server {
 
             jTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 15));
             jTable.getTableHeader().setOpaque(false);
-            jTable.getTableHeader().setForeground(new Color(255,255,255));
+            jTable.getTableHeader().setForeground(new Color(255, 255, 255));
             jTable.getTableHeader().setBackground(new Color(0, 0, 0));
 
             clientTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 15));
             clientTable.getTableHeader().setOpaque(false);
-            clientTable.getTableHeader().setForeground(new Color(255,255,255));
+            clientTable.getTableHeader().setForeground(new Color(255, 255, 255));
             clientTable.getTableHeader().setBackground(new Color(0, 0, 0));
 
             clientTable.setBounds(200, 80, 600, 150);
-            jTable.setBounds(20,300,950,400);
+            jTable.setBounds(20, 300, 950, 400);
 
             clientTable.setDefaultEditor(Object.class, null);
             jTable.setDefaultEditor(Object.class, null);
@@ -108,11 +112,11 @@ public class Server {
             clientTable.getColumnModel().getColumn(2).setPreferredWidth(40);
             clientTable.getColumnModel().getColumn(3).setPreferredWidth(360);
 
-            for(int i = 0; i < 4; ++i){
+            for (int i = 0; i < 4; ++i) {
                 jTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
             }
 
-            for(int i = 0; i < 3; ++i){
+            for (int i = 0; i < 3; ++i) {
                 clientTable.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
             }
 
@@ -122,14 +126,14 @@ public class Server {
             dataScrollPane = new JScrollPane(jTable);
             JScrollPane jTableClientScroll = new JScrollPane(clientTable);
 
-            dataScrollPane.setBounds(20,300,950,400);
+            dataScrollPane.setBounds(20, 300, 950, 400);
             jTableClientScroll.setBounds(200, 80, 600, 150);
 
             JScrollBar sb = dataScrollPane.getVerticalScrollBar();
             sb.setValue(sb.getMaximum());
 
-            dataScrollPane.getViewport().setBackground(new Color(255,255,255));
-            jTableClientScroll.getViewport().setBackground(new Color(255,255,255));
+            dataScrollPane.getViewport().setBackground(new Color(255, 255, 255));
+            jTableClientScroll.getViewport().setBackground(new Color(255, 255, 255));
 
             window.add(dataScrollPane);
             window.add(jTableClientScroll);
@@ -149,9 +153,9 @@ public class Server {
                     int val = fileChooser.showOpenDialog(window);
                     chooserDir = String.valueOf((fileChooser.getSelectedFile()));
 
-                    if(isValidPath(chooserDir) && val == JFileChooser.APPROVE_OPTION){
+                    if (isValidPath(chooserDir) && val == JFileChooser.APPROVE_OPTION) {
                         changeFilePath = true;
-                        clientTable.setValueAt(chooserDir,Server.clientTable.getSelectedRow(), 3) ;
+                        clientTable.setValueAt(chooserDir, Server.clientTable.getSelectedRow(), 3);
                     }
                     Server.clientTable.clearSelection();
                     System.out.println(fileChooser.getSelectedFile());
@@ -166,10 +170,10 @@ public class Server {
             window.add(comboboxLabel);
 
             // ID combobox
-            String []comboIDList = {"All", "1", "2", "3"};
+            String[] comboIDList = {"All"};
             jComboID = new JComboBox(comboIDList);
             jComboID.setBounds(20, 260, 300, 30);
-            jComboID.setBackground(new Color (255, 255, 255));
+            jComboID.setBackground(new Color(255, 255, 255));
 
             jComboID.addActionListener(new ActionListener() {
                 @Override
@@ -188,20 +192,42 @@ public class Server {
             window.add(searchNameLabel);
 
             // input
-            JTextField inputSearchNameTextField = new JTextField("");
+            inputSearchNameTextField = new JTextField();
             inputSearchNameTextField.setBounds(400, 260, 420, 30);
+
+            inputSearchNameTextField.getDocument().addDocumentListener(new DocumentListener() {
+                @Override
+                public void insertUpdate(DocumentEvent e) {
+                    change();
+                }
+
+                @Override
+                public void removeUpdate(DocumentEvent e) {
+                    change();
+                }
+
+                @Override
+                public void changedUpdate(DocumentEvent e) {
+                    change();
+                }
+
+                public void change() {
+                    filterNameButton.setEnabled(inputSearchNameTextField.getText() != null && !inputSearchNameTextField.getText().equals(""));
+                }
+            });
 
             window.add(inputSearchNameTextField);
 
             // filter button
-            JButton filterNameButton = new JButton("Filter");
+            filterNameButton = new JButton("Filter");
             filterNameButton.setBounds(830, 260, 62, 30);
             filterNameButton.setBackground(new Color(132, 255, 132));
+            filterNameButton.setEnabled(false);
             window.add(filterNameButton);
 
-//            filterNameButton.addActionListener(e -> {
-//                nameFilter(jTableModel, idSorter, name);
-//            });
+            filterNameButton.addActionListener(e -> {
+                nameFilter(jTableModel, idSorter, inputSearchNameTextField.getText());
+            });
 
             // reset button
             JButton resetFilterButton = new JButton("Reset");
@@ -217,27 +243,46 @@ public class Server {
             });
 
             window.setVisible(true);
-        }catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("Server constructor exception: " + e);
         }
     }
 
-    private void idFilter(DefaultTableModel m, TableRowSorter<TableModel> sorter, String data){
-        RowFilter<TableModel, Object> rf = null;
+    private void idFilter(DefaultTableModel m, TableRowSorter<TableModel> sorter, String data) {
+        RowFilter<TableModel, Object> rowFilter = null;
         //If current expression doesn't parse, don't update.
-        if(!Objects.equals(data, "All")){
+        if (!Objects.equals(data, "All")) {
             try {
-                rf = RowFilter.regexFilter(data,0);
+                rowFilter = RowFilter.regexFilter(data, 0);
             } catch (java.util.regex.PatternSyntaxException e) {
+                System.out.println(e);
                 return;
             }
         }
-
-        sorter.setRowFilter(rf);
+        sorter.setRowFilter(rowFilter);
     }
-    public void start(){
+
+    private void nameFilter(DefaultTableModel m, TableRowSorter<TableModel> sorter, String nameData) {
+        RowFilter<TableModel, Object> rowFilter = null;
         try {
-            do{
+            rowFilter = RowFilter.regexFilter(nameData, 1);
+        } catch (java.util.regex.PatternSyntaxException e) {
+            System.out.println(e);
+            return;
+        }
+
+        sorter.setRowFilter(rowFilter);
+
+        // Truong hop key khong ton tai, reset lai table ve hien thi all
+        if(sorter.getViewRowCount() == 0){
+            JOptionPane.showMessageDialog(window, "Searched Key doesn't exist, table will be reset to ALL");
+            sorter.setRowFilter(null);
+        }
+    }
+
+    public void start() {
+        try {
+            do {
                 System.out.println("Waiting for new client");
                 Socket s = sv.accept();
 
@@ -247,8 +292,8 @@ public class Server {
                 Thread t = new Thread(cl);
 
                 t.start();
-            }while(!sv.isClosed());
-        } catch (IOException e){
+            } while (!sv.isClosed());
+        } catch (IOException e) {
             System.out.println("Server start exception: " + e);
         }
     }
@@ -262,6 +307,7 @@ public class Server {
         }
         return true;
     }
+
     public static void main(String[] args) {
         Server sv = new Server(2222);
         sv.start();
