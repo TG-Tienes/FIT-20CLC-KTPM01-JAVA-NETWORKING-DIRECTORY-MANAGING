@@ -183,18 +183,16 @@ class GUI extends JPanel {
         label.setBounds(40, 20, 1000, 30);
         jFrame.add(label);
 
-        JLabel labelName = new JLabel("Name");
-        labelName.setBounds(20, 160, 80, 30);
-        labelName.setFont(new Font("Serif", Font.PLAIN, 24));
-        jFrame.add(labelName);
-
-        jInputName = new JTextField("User 1");
+        jInputName = new JTextField();
         jInputName.setSize(new Dimension(100, 50));
-        jInputName.setBounds(80, 160, 200, 30);
+        jInputName.setBounds(100, 100, 300, 35);
         jFrame.add(jInputName);
 
         jConnectButton = new JButton("Connect");
-        jConnectButton.setBounds(100, 200, 100, 30);
+        jConnectButton.setBounds(190, 150, 120, 45);
+        jConnectButton.setEnabled(false);
+        jConnectButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        jConnectButton.setBackground(new Color(132, 255, 132));
         jFrame.add(jConnectButton);
 
         jFrame.setVisible(true);
@@ -312,8 +310,10 @@ class RecursiveWatchService implements Runnable {
                 try {
                     DataOutputStream dOut = new DataOutputStream(new DataOutputStream(this.s.getOutputStream()));
                     dOut.writeUTF(Client.sendingMSG);
+
+                    String []sendingEvent = event.kind().name().split("_");
                     DefaultTableModel model = (DefaultTableModel) Client.jTable.getModel();
-                    model.addRow(new Object[]{event.kind().name(), child});
+                    model.addRow(new Object[]{sendingEvent[1], child});
 
 //                    Thread.sleep(200);
                 } catch (IOException e) {

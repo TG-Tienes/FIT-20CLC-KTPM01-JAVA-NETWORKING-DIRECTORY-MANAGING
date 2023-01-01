@@ -12,57 +12,57 @@ import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class Server {
     ServerSocket sv;
     int id = 0;
 
-    public static JFrame window;
+    public static JFrame jFrame;
     public static int port;
     public static JTable jTable, clientTable;
     public static int currentSelectedUser = -1;
     public static JFileChooser fileChooser;
     public static String chooserDir;
-    public static boolean changeFilePath = false, disconnectChoice = false;
+    public static boolean changeFilePath = false;
 
     public static JScrollPane dataScrollPane;
     public static JComboBox jComboID;
     public static JButton filterNameButton;
     public static JTextField inputSearchNameTextField;
-
     Server(int port) {
         try {
             sv = new ServerSocket(port);
             Server.port = port;
 
             // JFrame
-            window = new JFrame("SERVER");
-            window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            window.setLayout(null);
-            window.setBounds(300, 200, 1000, 800);
+            jFrame = new JFrame("SERVER");
+            jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            jFrame.setLayout(null);
+            jFrame.setBounds(300, 200, 1000, 800);
 
-            window.getContentPane().setBackground(new Color(240, 240, 240));
+            jFrame.getContentPane().setBackground(new Color(240, 240, 240));
 
             // Label
             JLabel uiLabel = new JLabel("SERVER");
-            uiLabel.setBounds(450, 15, 200, 30);
+            uiLabel.setBounds(420, 15, 200, 30);
             uiLabel.setFont(new Font("Serif", Font.PLAIN, 40));
-            window.add(uiLabel);
+            jFrame.add(uiLabel);
 
             // tables
-
-
             JLabel clientTableLabel = new JLabel("Click on row to select and change user's directory");
             clientTableLabel.setBounds(200, 50, 400, 30);
             clientTableLabel.setFont(new Font("Serif", Font.PLAIN, 18));
-            window.add(clientTableLabel);
+            jFrame.add(clientTableLabel);
 
             // create table
             DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
@@ -135,8 +135,8 @@ public class Server {
             dataScrollPane.getViewport().setBackground(new Color(255, 255, 255));
             jTableClientScroll.getViewport().setBackground(new Color(255, 255, 255));
 
-            window.add(dataScrollPane);
-            window.add(jTableClientScroll);
+            jFrame.add(dataScrollPane);
+            jFrame.add(jTableClientScroll);
 
             Server.clientTable.getSelectionModel().addListSelectionListener(event -> {
                 if (Server.clientTable.getSelectedRow() > -1) {
@@ -150,7 +150,7 @@ public class Server {
                     fileChooser.setAcceptAllFileFilterUsed(false);
 
 //                    JOptionPane.showInputDialog(fileChooser, JOptionPane.CANCEL_OPTION);
-                    int val = fileChooser.showOpenDialog(window);
+                    int val = fileChooser.showOpenDialog(jFrame);
                     chooserDir = String.valueOf((fileChooser.getSelectedFile()));
 
                     if (isValidPath(chooserDir) && val == JFileChooser.APPROVE_OPTION) {
@@ -167,33 +167,59 @@ public class Server {
             JLabel comboboxLabel = new JLabel("Filter by ID");
             comboboxLabel.setFont(new Font("Segoe UI", Font.BOLD, 15));
             comboboxLabel.setBounds(20, 230, 200, 30);
-            window.add(comboboxLabel);
+            jFrame.add(comboboxLabel);
 
             // ID combobox
             String[] comboIDList = {"All"};
             jComboID = new JComboBox(comboIDList);
             jComboID.setBounds(20, 260, 300, 30);
             jComboID.setBackground(new Color(255, 255, 255));
+            jComboID.setToolTipText("Click to show dropdown");
+            jComboID.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-            jComboID.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    String filterData = jComboID.getItemAt(jComboID.getSelectedIndex()).toString();
-                    idFilter(jTableModel, idSorter, filterData.split("-")[0]);
-                }
+            jComboID.addActionListener(e -> {
+                String filterData = jComboID.getItemAt(jComboID.getSelectedIndex()).toString();
+                idFilter(jTableModel, idSorter, filterData.split("-")[0]);
             });
-            window.add(jComboID);
+            jFrame.add(jComboID);
 
             // SEARCH NAME
             // input search label
             JLabel searchNameLabel = new JLabel("Filter by NAME");
             searchNameLabel.setBounds(400, 230, 200, 30);
             searchNameLabel.setFont(new Font("Segoe UI", Font.BOLD, 15));
-            window.add(searchNameLabel);
+            jFrame.add(searchNameLabel);
 
             // input
             inputSearchNameTextField = new JTextField();
             inputSearchNameTextField.setBounds(400, 260, 420, 30);
+            inputSearchNameTextField.setToolTipText("Enter name to filter");
+
+            inputSearchNameTextField.addMouseListener(new MouseListener() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    inputSearchNameTextField.setText("");
+                }
+
+                @Override
+                public void mousePressed(MouseEvent e) {
+
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e) {
+
+                }
+
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                }
+            });
+
 
             inputSearchNameTextField.getDocument().addDocumentListener(new DocumentListener() {
                 @Override
@@ -216,24 +242,26 @@ public class Server {
                 }
             });
 
-            window.add(inputSearchNameTextField);
+            jFrame.add(inputSearchNameTextField);
 
             // filter button
             filterNameButton = new JButton("Filter");
             filterNameButton.setBounds(830, 260, 62, 30);
             filterNameButton.setBackground(new Color(132, 255, 132));
             filterNameButton.setEnabled(false);
-            window.add(filterNameButton);
+            filterNameButton.setToolTipText("Filter by name");
+            filterNameButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            jFrame.add(filterNameButton);
 
-            filterNameButton.addActionListener(e -> {
-                nameFilter(jTableModel, idSorter, inputSearchNameTextField.getText());
-            });
+            filterNameButton.addActionListener(e -> nameFilter(jTableModel, idSorter, inputSearchNameTextField.getText()));
 
             // reset button
             JButton resetFilterButton = new JButton("Reset");
             resetFilterButton.setBounds(900, 260, 68, 30);
             resetFilterButton.setBackground(new Color(255, 61, 61));
-            window.add(resetFilterButton);
+            resetFilterButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            resetFilterButton.setToolTipText("Reset table, remove all filter, display all data row");
+            jFrame.add(resetFilterButton);
 
             resetFilterButton.addActionListener(new ActionListener() {
                 @Override
@@ -242,7 +270,7 @@ public class Server {
                 }
             });
 
-            window.setVisible(true);
+            jFrame.setVisible(true);
         } catch (IOException e) {
             System.out.println("Server constructor exception: " + e);
         }
@@ -275,7 +303,7 @@ public class Server {
 
         // Truong hop key khong ton tai, reset lai table ve hien thi all
         if(sorter.getViewRowCount() == 0){
-            JOptionPane.showMessageDialog(window, "Searched Key doesn't exist, table will be reset to ALL");
+            JOptionPane.showMessageDialog(jFrame, "Searched Key doesn't exist, table will be reset to ALL");
             sorter.setRowFilter(null);
         }
     }

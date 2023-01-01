@@ -4,9 +4,9 @@ import Server.Server;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import java.awt.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.Socket;
 import java.util.*;
 import java.time.LocalDateTime;
@@ -47,7 +47,6 @@ public class ClientHandler extends JPanel implements Runnable {
 
     @Override
     public void run() {
-//        while (s.isConnected()){
         try {
             new Thread(() -> {
                 String msg;
@@ -82,11 +81,18 @@ public class ClientHandler extends JPanel implements Runnable {
                         for (int i = 0; i < model.getRowCount(); ++i) {
                             if (Objects.equals(model.getValueAt(i, 0), id)) {
                                 model.removeRow(i);
-                                JOptionPane.showMessageDialog(Server.window, "Client \"id: " + id + "- name: " + name + "\" has disconnected");
+                                JOptionPane.showMessageDialog(Server.jFrame, "Client \"id: " + id + "- name: " + name + "\" has disconnected");
                                 break;
                             }
                         }
-                        Server.jComboID.removeItem(this.id + "-" + this.name);
+
+                        try {
+                            this.s.close();
+                        } catch (IOException ex) {
+                            throw new RuntimeException(ex);
+                        }
+
+//                        Server.jComboID.removeItem(this.id + "-" + this.name);
                         clientList.remove(id);
                         break;
                     }
@@ -99,13 +105,10 @@ public class ClientHandler extends JPanel implements Runnable {
                 System.out.println("Close socket exception: " + e);
             }
             System.out.println("Handler run exception: " + e);
-//                break;
         }
-//        }
 
         while (s.isConnected()) {
             Scanner sc = new Scanner(System.in);
-//                    if(countTime == 0){
             if (!Server.changeFilePath || this.id != Server.currentSelectedUser) {
                 continue;
             } else {
@@ -115,21 +118,18 @@ public class ClientHandler extends JPanel implements Runnable {
                     ClientHandler temp = clientList.get(Server.currentSelectedUser);
 
                     String sendMSG = Server.chooserDir;
-//                Thread.interrupted();
                     try {
                         temp.dOutput.writeUTF(sendMSG);
                     } catch (Exception e) {
                         System.out.println("Exception: " + e);
                     }
                     System.out.println("Sent msg: " + this.id + "-" + sendMSG);
-//                    prevID = Server.currentSelectedUser;
-//                    countTime = 1;
+
                     Server.changeFilePath = false;
                 } catch (Exception e) {
                     System.out.println("Exception 2: " + e);
                 }
             }
-//                    }
         }
 
     }
